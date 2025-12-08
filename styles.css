@@ -1,0 +1,744 @@
+:root {
+  --bg: #0f1220;
+  --bg-soft: #141735;
+  --text: #e8ecf8;
+  --muted: #b8c1d9;
+  --accent: #6ae3ff;
+  --accent-2: #ffb86b;
+  --card: #1a1f3c;
+  --border: rgba(255,255,255,0.08);
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #fb7185;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --ease: cubic-bezier(.25,.8,.25,1);
+  /* Warna garis orbit untuk tema gelap */
+  --orbit-line-color: rgba(255,255,255,0.18); 
+}
+
+/* Light theme */
+:root.light {
+  --bg: #f8fafc;
+  --bg-soft: #ffffff;
+  --text: #0f172a;
+  --muted: #5b647a;
+  --accent: #2b7fff; /* Menggunakan warna biru yang kontras */
+  --accent-2: #d97706;
+  --card: #ffffff;
+  --border: rgba(17,24,39,0.08);
+  --shadow: 0 10px 30px rgba(17,24,39,0.1);
+  /* Warna garis orbit untuk tema terang (hitam transparan) */
+  --orbit-line-color: rgba(0,0,0,0.18); 
+}
+
+/* High Contrast theme */
+:root.high-contrast {
+    --bg: #000000;
+    --bg-soft: #111111;
+    --text: #ffffff;
+    --muted: #aaaaaa;
+    --accent: #ff00ff; /* Magenta neon */
+    --accent-2: #ffff00; /* Neon Yellow */
+    --card: #0d0d0d;
+    --border: #ffff00; /* Yellow border for emphasis */
+    --success: #00ff00;
+    --warning: #ffaa00;
+    --danger: #ff0000;
+    --shadow: none; /* No shadows for high contrast */
+    --orbit-line-color: #ff00ff; /* Magenta orbit line */
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% 0%, #101436 0%, var(--bg) 60%),
+    conic-gradient(from 200deg at 100% 0%, #0b0f24 0deg, var(--bg) 140deg);
+  color: var(--text);
+  transition: background 0.5s ease;
+}
+:root.light body {
+    background: var(--bg);
+}
+:root.high-contrast body {
+    background: var(--bg);
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  backdrop-filter: blur(12px);
+  border-right: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg-soft), transparent);
+  padding: 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.title h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.title p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 12px;
+}
+
+.search input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-soft);
+  color: var(--text);
+  outline: none;
+  transition:
+    border-color .2s var(--ease),
+    box-shadow .2s var(--ease);
+}
+
+.search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(106,227,255,0.15);
+}
+:root.high-contrast .search input:focus {
+    box-shadow: 0 0 0 3px var(--accent);
+}
+
+.nav-list h2 {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 12px 0;
+}
+
+.nav-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  transition:
+    transform .15s var(--ease),
+    background .2s var(--ease),
+    border-color .2s var(--ease);
+}
+
+.nav-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.14);
+}
+:root.light .nav-item:hover {
+    border-color: rgba(17,24,39,0.14);
+}
+
+.nav-item.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(106,227,255,0.15) inset;
+}
+:root.light .nav-item.active {
+    box-shadow: 0 0 0 4px rgba(43,127,255,0.15) inset;
+}
+:root.high-contrast .nav-item.active {
+    box-shadow: 0 0 0 3px var(--accent) inset;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(106,227,255,0.14);
+  color: var(--accent);
+  border: 1px solid rgba(106,227,255,0.35);
+}
+:root.light .badge {
+    background: rgba(43,127,255,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(43,127,255,0.35);
+}
+:root.high-contrast .badge {
+    background: rgba(255, 0, 255, 0.1);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
+
+.sidebar-footer {
+  margin-top: 20px;
+  color: var(--muted);
+}
+
+/* CONTENT */
+.content {
+  padding: 24px;
+}
+
+.breadcrumb {
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+/* HERO CANVAS */
+.hero {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: radial-gradient(800px 400px at 70% 70%, rgba(255,255,255,0.06), transparent 55%);
+  min-height: 380px;
+  box-shadow: var(--shadow);
+}
+:root.light .hero {
+    background: radial-gradient(800px 400px at 70% 70%, rgba(17,24,39,0.03), transparent 55%);
+}
+:root.high-contrast .hero {
+    box-shadow: none;
+    background: var(--bg-soft);
+}
+
+
+#orbitCanvas {
+  display: block;
+  width: 100%;
+  height: 380px;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 18px;
+  background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.25) 100%);
+}
+:root.light .hero-overlay {
+    background: linear-gradient(180deg, transparent 60%, rgba(255, 255, 255, 0.5) 100%);
+}
+:root.high-contrast .hero-overlay {
+    background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+
+.hero-text h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.hero-text p {
+  margin: 6px 0 12px;
+  color: var(--muted);
+}
+
+.hero-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* BUTTONS */
+.btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--accent);
+  color: #0d1024;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform .15s var(--ease),
+    box-shadow .2s var(--ease),
+    background .2s var(--ease);
+}
+:root.light .btn {
+    color: var(--text);
+}
+:root.high-contrast .btn {
+    box-shadow: none;
+    color: var(--text);
+}
+
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+:root.high-contrast .btn:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.btn.ghost {
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+.select {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+/* KONTROL KECEPATAN */
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+
+.speed-control label {
+    color: var(--muted);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.speed-control input[type="range"] {
+    width: 100px;
+}
+
+.speed-control span {
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 30px;
+}
+
+
+/* INFO + TABS */
+.info {
+  margin-top: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tab {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.tab.active {
+  background: linear-gradient(
+    135deg,
+    rgba(106,227,255,0.16),
+    rgba(255,184,107,0.12)
+  );
+  border-color: var(--accent);
+}
+:root.light .tab.active {
+    background: linear-gradient(
+        135deg,
+        rgba(43,127,255,0.16),
+        rgba(217,119,6,0.12)
+    );
+    border-color: var(--accent);
+}
+:root.high-contrast .tab.active {
+    background: var(--bg-soft);
+    border-color: var(--accent);
+}
+
+/* CARDS */
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform .2s var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-1px);
+}
+:root.high-contrast .card {
+    box-shadow: none;
+    transform: none;
+}
+
+/* TAB PANELS */
+.tab-panel {
+  display: none;
+  padding: 16px;
+}
+
+.tab-panel.active {
+  display: block;
+  animation: fade .25s var(--ease);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* DATA GRID */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.data-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: var(--bg-soft);
+}
+
+.data-item h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.data-item p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* FACTS */
+.fact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.fact {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: var(--bg-soft);
+}
+
+/* ACCESSIBILITY */
+:focus-visible {
+  outline: 3px solid rgba(106,227,255,0.35);
+  outline-offset: 2px;
+}
+:root.light :focus-visible {
+    outline: 3px solid rgba(43,127,255,0.35);
+}
+:root.high-contrast :focus-visible {
+    outline: 3px solid var(--accent);
+}
+
+/* RESPONSIVE */
+@media (max-width: 960px) {
+  #app {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: relative;
+    height: auto;
+  }
+  
+  #orbitCanvas {
+    height: 320px;
+  }
+  
+  .data-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Gaya untuk Login/Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease), visibility 0.3s var(--ease);
+}
+
+.modal-overlay.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 400px;
+  padding: 30px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.close-btn:hover {
+    color: var(--text);
+}
+
+/* FORM GROUP */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-soft);
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s;
+  font-family: inherit;
+  font-size: inherit;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent);
+}
+:root.high-contrast .form-group input:focus {
+    border-color: var(--accent);
+}
+
+
+.btn.primary-full {
+    width: 100%;
+    margin-top: 15px;
+    background: var(--accent);
+    color: var(--bg); /* Warna teks gelap di tombol accent */
+    border: 1px solid var(--accent);
+}
+.btn.primary-full:hover {
+    background: #4de6ff;
+}
+:root.light .btn.primary-full {
+    color: #fff;
+    background: var(--accent);
+}
+:root.high-contrast .btn.primary-full {
+    color: var(--bg);
+    background: var(--accent);
+}
+
+
+/* PROFILE INFO di Sidebar */
+#profileSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+}
+#profileSection button.btn {
+    padding: 8px 12px; 
+}
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.profile-info strong {
+    color: var(--accent);
+    font-size: 14px;
+}
+.profile-info small {
+    color: var(--muted);
+    font-size: 11px;
+}
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+    min-width: 80px;
+}
+
+/* Gaya untuk Ulasan */
+#reviewFormFields:disabled {
+    opacity: 0.7;
+    pointer-events: none;
+}
+#reviewFormFields:disabled #reviewLoginMessage {
+    display: block !important;
+}
+#reviewFormFields:not(:disabled) #reviewLoginMessage {
+    display: none;
+}
+
+.review-list {
+    display: grid;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.review-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 15px;
+    background: var(--bg-soft);
+    display: flex;
+    flex-direction: column;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+}
+
+.review-author {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.review-rating-stars {
+    color: var(--warning); /* Warna bintang kuning */
+    font-size: 18px;
+}
+
+.review-body {
+    font-size: 14px;
+    margin-top: 5px;
+    color: var(--text);
+}
+
+.review-date {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+    text-align: right;
+}
+
+/* Gaya untuk tombol hapus ulasan */
+.review-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+.btn.delete {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn.delete:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+}
+
+.btn.delete:active {
+    transform: translateY(0);
+}
+
+:root.light .btn.delete {
+    color: white;
+}
+
+:root.high-contrast .btn.delete {
+    background: var(--danger);
+    color: var(--text);
+    border: 1px solid var(--danger);
+}

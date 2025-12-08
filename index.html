@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tata Surya Interaktif</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar" aria-label="Navigasi">
+      <div class="brand">
+        <div class="logo">☀️</div>
+        <div class="title">
+          <h1>Ruang Planet</h1>
+          <p>Edukasi</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="themeToggle" class="btn ghost" aria-label="Ganti tema">Tema</button>
+        
+        <div id="profileSection">
+            <button id="loginBtn" class="btn">Masuk</button>
+        </div>
+        <div class="search">
+          <input id="searchInput" type="text" placeholder="Cari planet..." aria-label="Pencarian" />
+        </div>
+      </div>
+
+      <nav class="nav-list" role="navigation" aria-label="Daftar objek">
+        <h2>Objek</h2>
+        <ul id="objectList"></ul>
+      </nav>
+
+      <footer class="sidebar-footer">
+        <small>© 2025 Ruang Planet</small>
+      </footer>
+    </aside>
+
+    <main class="content" aria-live="polite">
+      <div class="breadcrumb" id="breadcrumb"></div>
+
+      <section class="hero">
+        <canvas id="orbitCanvas" aria-label="Visualisasi orbit"></canvas>
+        <div class="hero-overlay">
+          <div class="hero-text">
+            <h2 id="selectedName">Selamat datang</h2>
+            <p id="selectedTagline">Pilih objek untuk menjelajah dengan halus dan mendalam.</p>
+           <div class="hero-actions">
+  <button id="homeBtn" class="btn ghost">Pusat Tata Surya</button>
+  <button id="prevBtn" class="btn ghost">⬅️ Sebelumnya</button>
+  <button id="nextBtn" class="btn ghost">➡️ Berikutnya</button>
+  <button id="focusBtn" class="btn">🔍 Fokus orbit</button>
+  <select id="jumpSelect" class="select" aria-label="Loncat ke objek">
+    <option value="">Loncat ke…</option>
+  </select>
+
+  <div class="speed-control">
+    <label for="speedSlider">Kecepatan Rotasi:</label>
+    <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1" aria-label="Pengatur kecepatan rotasi visualisasi">
+    <span id="speedValue">1.0x</span>
+  </div>
+  </div>
+      </section>
+
+      <section class="info">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+          <button class="tab" data-tab="data" role="tab">Data</button>
+          <button class="tab" data-tab="facts" role="tab">Fakta</button>
+          <button class="tab" data-tab="reviews" role="tab">Ulasan</button> </div>
+
+        <div class="card">
+          <div class="tab-panel active" id="tab-overview" role="tabpanel" aria-labelledby="overview">
+            <h3>penjelasan</h3>
+            <p id="overviewText"></p>
+          </div>
+
+          <div class="tab-panel" id="tab-data" role="tabpanel" aria-labelledby="data">
+            <h3>Data utama</h3>
+            <div class="data-grid" id="dataGrid"></div>
+          </div>
+
+          <div class="tab-panel" id="tab-facts" role="tabpanel" aria-labelledby="facts">
+            <h3>Fakta menarik</h3>
+            <ul class="fact-list" id="factList"></ul>
+          </div>
+          
+          <div class="tab-panel" id="tab-reviews" role="tabpanel" aria-labelledby="reviews">
+            <h3>Berikan Ulasan untuk <span id="reviewObjectName"></span></h3>
+            
+            <fieldset id="reviewFormFields">
+                <p id="reviewLoginMessage" style="color: var(--danger); font-size: 14px; margin-bottom: 10px;">
+                    Anda harus <a href="#" onclick="showLoginModal(); return false;">masuk</a> untuk memberikan ulasan.
+                </p>
+
+                <form id="reviewForm">
+                    <div class="form-group">
+                        <label for="review-rating">Rating</label>
+                        <select id="review-rating" required>
+                            <option value="5">🌟🌟🌟🌟🌟 (Sangat Baik)</option>
+                            <option value="4">🌟🌟🌟🌟 (Baik)</option>
+                            <option value="3">🌟🌟🌟 (Rata-rata)</option>
+                            <option value="2">🌟🌟 (Buruk)</option>
+                            <option value="1">🌟 (Sangat Buruk)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-comment">Komentar</label>
+                        <textarea id="review-comment" required rows="4" placeholder="Tuliskan ulasan Anda..."></textarea>
+                    </div>
+                    <button type="submit" class="btn primary-full">Kirim Ulasan</button>
+                </form>
+            </fieldset>
+
+            <h3 style="margin-top: 30px;">Ulasan Lainnya</h3>
+            <div class="review-list" id="reviewList">
+                </div>
+          </div>
+          </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="loginModal">
+      <div class="modal-content card">
+          <button class="close-btn" id="closeModal" aria-label="Tutup modal">×</button>
+          <h2>Masuk ke Ruang Planet</h2>
+          <p><strong>Peringatan:</strong> Fitur ini hanya simulasi login di sisi klien (browser) dan tidak menggunakan server atau database nyata. Nama pengguna akan disimpan lokal di browser Anda.</p>
+          
+          <form id="loginForm">
+              <div class="form-group">
+                  <label for="login-username">Nama Pengguna (Apapun)</label>
+                  <input type="text" id="login-username" required placeholder="Masukkan nama pengguna">
+              </div>
+              <div class="form-group">
+                  <label for="login-password">Kata Sandi (Diabaikan)</label>
+                  <input type="password" id="login-password" value="password" placeholder="Masukkan kata sandi" disabled>
+              </div>
+              <button type="submit" class="btn primary-full">Masuk</button>
+          </form>
+      </div>
+  </div>
+  <script src="script.js" type="module"></script>
+</body>
+</html>
