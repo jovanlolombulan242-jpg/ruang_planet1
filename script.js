@@ -223,7 +223,8 @@ const OBJECTS = [
 ];
 
 // Konstanta
-const REVIEWS_KEY = 'rp_reviews'; 
+const REVIEWS_KEY = 'rp_reviews';
+const USERS_KEY = 'rp_users';
 
 // State
 let state = {
@@ -231,12 +232,14 @@ let state = {
   focused: false,
   theme: localStorage.getItem("theme") || "dark",
   rotationSpeedFactor: 1.0,
-  isLoggedIn: false, 
-  username: ""       
+  isLoggedIn: false,
+  username: "",
+  currentUser: null
 };
 
-// State Review
-let reviews = {}; 
+// Data
+let reviews = {};
+let users = [];
 
 // Elemen DOM
 const listEl = document.getElementById("objectList");
@@ -262,6 +265,9 @@ const profileSectionEl = document.getElementById("profileSection");
 const loginModalEl = document.getElementById("loginModal");
 const closeModalBtn = document.getElementById("closeModal");
 const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+const loginTabBtn = document.getElementById("loginTabBtn");
+const registerTabBtn = document.getElementById("registerTabBtn");
 
 // Elemen DOM untuk Ulasan
 const reviewObjectNameEl = document.getElementById("reviewObjectName");
@@ -278,7 +284,7 @@ const panels = {
   overview: document.getElementById("tab-overview"),
   data: document.getElementById("tab-data"),
   facts: document.getElementById("tab-facts"),
-  reviews: document.getElementById("tab-reviews"), 
+  reviews: document.getElementById("tab-reviews"),
 };
 
 tabs.forEach(tab => {
@@ -292,7 +298,7 @@ tabs.forEach(tab => {
 
 // Theme Logic
 function applyTheme() {
-  document.documentElement.classList.remove("light", "high-contrast"); 
+  document.documentElement.classList.remove("light", "high-contrast");
   
   if (state.theme === "light") {
     document.documentElement.classList.add("light");
@@ -314,17 +320,49 @@ themeToggleEl.addEventListener("click", () => {
   applyTheme();
 });
 
-// Fungsi Login/Logout
-function checkLoginStatus() {
-  const storedUser = localStorage.getItem('rp_username');
-  if (storedUser) {
-    state.isLoggedIn = true;
-    state.username = storedUser;
+// ============================================
+// SISTEM LOGIN & REGISTRASI
+// ============================================
+
+// Load data pengguna
+function loadUsers() {
+  const storedUsers = localStorage.getItem(USERS_KEY);
+  if (storedUsers) {
+    try {
+      users = JSON.parse(storedUsers);
+    } catch (e) {
+      console.error("Gagal memuat data pengguna:", e);
+      users = [];
+    }
   }
-  renderLoginUI();
-  updateReviewFormAccess(); 
 }
 
+// Save data pengguna
+function saveUsers() {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+// Cek status login
+function checkLoginStatus() {
+  const storedUserData = localStorage.getItem('rp_currentUser');
+  if (storedUserData) {
+    try {
+      const userData = JSON.parse(storedUserData);
+      state.isLoggedIn = true;
+      state.username = userData.username;
+      state.currentUser = userData;
+    } catch (e) {
+      console.error("Gagal memuat data login:", e);
+      state.isLoggedIn = false;
+      state.username = "";
+      state.currentUser = null;
+    }
+  }
+  renderLoginUI();
+  updateReviewFormAccess();
+}
+
+// Render UI login/logout
 function renderLoginUI() {
   if (!profileSectionEl) return;
   
@@ -347,45 +385,149 @@ function renderLoginUI() {
   }
 }
 
+// Show login modal
 function showLoginModal() {
   if (loginModalEl) {
     loginModalEl.classList.add("visible");
+    showLoginForm(); // Default tampilkan form login
   }
 }
 
+// Hide login modal
 function hideLoginModal() {
   if (loginModalEl) {
     loginModalEl.classList.remove("visible");
+    // Reset forms
+    if (loginForm) loginForm.reset();
+    if (registerForm) registerForm.reset();
   }
 }
 
+// Switch antara form login dan register
+function showLoginForm() {
+  if (loginForm) loginForm.style.display = 'block';
+  if (registerForm) registerForm.style.display = 'none';
+  if (loginTabBtn) loginTabBtn.classList.add('active');
+  if (registerTabBtn) registerTabBtn.classList.remove('active');
+}
+
+function showRegisterForm() {
+  if (loginForm) loginForm.style.display = 'none';
+  if (registerForm) registerForm.style.display = 'block';
+  if (loginTabBtn) loginTabBtn.classList.remove('active');
+  if (registerTabBtn) registerTabBtn.classList.add('active');
+}
+
+// Handle login
 function handleLogin(e) {
   e.preventDefault();
-  const usernameInput = document.getElementById('login-username').value;
+  const usernameInput = document.getElementById('login-username').value.trim();
+  const passwordInput = document.getElementById('login-password').value.trim();
   
-  if (usernameInput.trim() === "") {
-    alert("Nama pengguna tidak boleh kosong!");
+  if (usernameInput === "" || passwordInput === "") {
+    alert("Username dan password harus diisi!");
+    return;
+  }
+  
+  // Cari user
+  const user = users.find(u => u.username === usernameInput);
+  
+  if (!user) {
+    alert("Username tidak ditemukan! Silakan daftar terlebih dahulu.");
+    return;
+  }
+  
+  if (user.password !== passwordInput) {
+    alert("Password salah!");
     return;
   }
 
+  // Login berhasil
   state.isLoggedIn = true;
   state.username = usernameInput;
-  localStorage.setItem('rp_username', usernameInput);
+  state.currentUser = user;
+  
+  localStorage.setItem('rp_currentUser', JSON.stringify(user));
   
   hideLoginModal();
   renderLoginUI();
-  updateReviewFormAccess(); 
+  updateReviewFormAccess();
+  
+  alert(`Selamat datang kembali ${usernameInput}!`);
 }
 
-function handleLogout() {
-  state.isLoggedIn = false;
-  state.username = "";
-  localStorage.removeItem('rp_username');
+// Handle register
+function handleRegister(e) {
+  e.preventDefault();
+  const usernameInput = document.getElementById('register-username').value.trim();
+  const passwordInput = document.getElementById('register-password').value.trim();
+  const confirmInput = document.getElementById('register-confirm').value.trim();
+  
+  // Validasi
+  if (usernameInput === "" || passwordInput === "") {
+    alert("Username dan password harus diisi!");
+    return;
+  }
+  
+  if (passwordInput !== confirmInput) {
+    alert("Password dan konfirmasi password tidak cocok!");
+    return;
+  }
+  
+  if (passwordInput.length < 3) {
+    alert("Password minimal 3 karakter!");
+    return;
+  }
+  
+  // Cek apakah username sudah ada
+  if (users.some(u => u.username === usernameInput)) {
+    alert("Username sudah digunakan! Silakan pilih username lain.");
+    return;
+  }
+  
+  // Buat user baru
+  const newUser = {
+    username: usernameInput,
+    password: passwordInput,
+    createdAt: new Date().toISOString()
+  };
+  
+  users.push(newUser);
+  saveUsers();
+  
+  // Auto login setelah register
+  state.isLoggedIn = true;
+  state.username = usernameInput;
+  state.currentUser = newUser;
+  
+  localStorage.setItem('rp_currentUser', JSON.stringify(newUser));
+  
+  hideLoginModal();
   renderLoginUI();
-  updateReviewFormAccess(); 
+  updateReviewFormAccess();
+  
+  alert(`Pendaftaran berhasil! Selamat datang ${usernameInput}!`);
 }
 
-// Fungsi Ulasan
+// Handle logout
+function handleLogout() {
+  if (confirm("Apakah Anda yakin ingin keluar?")) {
+    state.isLoggedIn = false;
+    state.username = "";
+    state.currentUser = null;
+    
+    localStorage.removeItem('rp_currentUser');
+    renderLoginUI();
+    updateReviewFormAccess();
+    
+    alert("Anda telah berhasil logout.");
+  }
+}
+
+// ============================================
+// SISTEM ULASAN
+// ============================================
+
 function loadReviews() {
     const storedReviews = localStorage.getItem(REVIEWS_KEY);
     if (storedReviews) {
@@ -417,7 +559,7 @@ function renderReviews() {
 
     const currentObject = OBJECTS[state.selectedIndex];
     const objectId = currentObject.id;
-    reviewObjectNameEl.textContent = currentObject.name; 
+    reviewObjectNameEl.textContent = currentObject.name;
 
     const objectReviews = reviews[objectId] || [];
     reviewListEl.innerHTML = "";
@@ -550,6 +692,10 @@ function handleDeleteReview(e) {
     }
 }
 
+// ============================================
+// FUNGSI UTAMA
+// ============================================
+
 // Render dropdown Loncat 
 function renderJumpSelect() {
   if (!jumpSelect) return;
@@ -563,7 +709,7 @@ function renderJumpSelect() {
   jumpSelect.addEventListener("change", (e) => {
     const v = e.target.value;
     if (v !== "") selectIndex(Number(v));
-    jumpSelect.value = ""; 
+    jumpSelect.value = "";
   });
 }
 
@@ -706,7 +852,7 @@ function selectIndex(idx) {
 
   // Update Visuals
   drawOrbit();
-  renderList(searchInputEl ? searchInputEl.value : ""); 
+  renderList(searchInputEl ? searchInputEl.value : "");
 }
 
 // Orbit canvas (2D halus, dengan fokus opsional)
@@ -749,7 +895,7 @@ function drawOrbit() {
     ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--orbit-line-color').trim();
     ctx.lineWidth = 1.2 * dpr;
     ctx.beginPath();
-    ctx.ellipse(cx, cy, r, r * 0.88, 0, 0, Math.PI * 2); 
+    ctx.ellipse(cx, cy, r, r * 0.88, 0, 0, Math.PI * 2);
     ctx.stroke();
   });
 
@@ -757,7 +903,7 @@ function drawOrbit() {
   OBJECTS.forEach((obj, i) => {
     if (obj.id === "sun") return;
     const r = obj.orbitRadius * dpr;
-    const speed = 0.0007 + i * 0.00023; 
+    const speed = 0.0007 + i * 0.00023;
     
     const currentSpeed = state.focused && i === state.selectedIndex ? speed * 1.6 : speed;
     
@@ -795,8 +941,13 @@ function loop() {
 
 // Initialization
 function init() {
-  loadReviews(); 
-  checkLoginStatus(); 
+  loadUsers(); // Load data pengguna
+  loadReviews(); // Load ulasan
+  checkLoginStatus(); // Cek status login
+
+  // Setup tab switching di modal login
+  if (loginTabBtn) loginTabBtn.addEventListener('click', showLoginForm);
+  if (registerTabBtn) registerTabBtn.addEventListener('click', showRegisterForm);
 
   renderJumpSelect();
   renderList();
@@ -812,6 +963,7 @@ function init() {
       if (e.target === loginModalEl) hideLoginModal();
   });
   if (loginForm) loginForm.addEventListener("submit", handleLogin);
+  if (registerForm) registerForm.addEventListener("submit", handleRegister);
   if (reviewFormEl) reviewFormEl.addEventListener("submit", handleReviewSubmit);
 
   // Event delegation untuk tombol hapus
