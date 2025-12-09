@@ -127,18 +127,39 @@
       <div class="modal-content card">
           <button class="close-btn" id="closeModal" aria-label="Tutup modal">×</button>
           <h2>Masuk ke Ruang Planet</h2>
-          <p><strong>Peringatan:</strong> Fitur ini hanya simulasi login di sisi klien (browser) dan tidak menggunakan server atau database nyata. Nama pengguna akan disimpan lokal di browser Anda.</p>
+          <p><strong>Login Simulasi:</strong> Data disimpan di browser Anda. Silakan buat akun dengan username dan password pilihan Anda.</p>
+          
+          <div class="tabs" style="margin-bottom: 15px;">
+            <button type="button" class="tab active" id="loginTabBtn">Masuk</button>
+            <button type="button" class="tab" id="registerTabBtn">Daftar</button>
+          </div>
           
           <form id="loginForm">
               <div class="form-group">
-                  <label for="login-username">Nama Pengguna (Apapun)</label>
-                  <input type="text" id="login-username" required placeholder="Masukkan nama pengguna">
+                  <label for="login-username">Nama Pengguna</label>
+                  <input type="text" id="login-username" required placeholder="Masukkan username Anda">
               </div>
               <div class="form-group">
-                  <label for="login-password">Kata Sandi (Diabaikan)</label>
-                  <input type="password" id="login-password" value="password" placeholder="Masukkan kata sandi" disabled>
+                  <label for="login-password">Kata Sandi</label>
+                  <input type="password" id="login-password" required placeholder="Masukkan kata sandi">
               </div>
               <button type="submit" class="btn primary-full">Masuk</button>
+          </form>
+          
+          <form id="registerForm" style="display: none;">
+              <div class="form-group">
+                  <label for="register-username">Nama Pengguna Baru</label>
+                  <input type="text" id="register-username" required placeholder="Pilih username">
+              </div>
+              <div class="form-group">
+                  <label for="register-password">Kata Sandi Baru</label>
+                  <input type="password" id="register-password" required placeholder="Buat kata sandi">
+              </div>
+              <div class="form-group">
+                  <label for="register-confirm">Konfirmasi Kata Sandi</label>
+                  <input type="password" id="register-confirm" required placeholder="Ulangi kata sandi">
+              </div>
+              <button type="submit" class="btn primary-full">Daftar</button>
           </form>
       </div>
   </div>
